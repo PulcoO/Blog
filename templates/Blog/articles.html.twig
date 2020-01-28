@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{title}}
+{% endblock %}
+
+{% block body %}
+
+	<h1>{{title}}</h1>
+
+	<section>
+
+		{% for article in articles %}
+		<article>
+			<h2>{{article.title}}</h2>
+			<div class="metadata">Ecrit le {{article.createdAt | date('d/m/y')}} à {{article.createdAt | date('H:i')}} dans la catégorie Politique</div>
+			<div class="content">
+				<img src="{{article.image}}" alt="">
+				<p>{{article.content | raw }}</p>
+				<a href="{{ path('article_details',{ 'id': article.id }) }}" class="btn btn-primary">...</a>
+			</div>
+		</article>
+		{% endfor %}
+        
+
+	</section>
+
+
+{% endblock %}
