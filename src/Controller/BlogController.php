@@ -11,9 +11,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 
 use App\Entity\Article;
+use App\Form\ArticleType;
 use App\Repository\ArticleRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use phpDocumentor\Reflection\Types\Null_;
 
 class BlogController extends AbstractController
 {
@@ -42,21 +44,28 @@ class BlogController extends AbstractController
     }
 
     /**
-     * @Route("/article/create", name = "article_create")
+     * @Route("/article/create", name = "article_form")
+     * @Route("/article/{id}/edit", name="article_edit")
      */
 
-    public function article_create(Request $request, EntityManagerInterface $manager){ //ici bien penser a utiliser EntityManagerInterface que ObjectManager
-        $article = new Article();
+    public function article_form(Article $article = null,Request $request, EntityManagerInterface $manager){ //ici bien penser a utiliser EntityManagerInterface que ObjectManager
+        
+        if(!$article){
+            $article = new Article;
+        };
+        $form = $this->createForm(ArticleType::class,$article);
+        // $form = $this->createFormBuilder($article)
+        //             ->add('title', TextType::class)
+        //             ->add('content', TextareaType::class)
+        //             ->add('image', TextType::class)
+        //             ->getForm();
 
-        $form = $this->createFormBuilder($article)
-                    ->add('title', TextType::class)
-                    ->add('content', TextareaType::class)
-                    ->add('image', TextType::class)
-                    ->getForm();
-        $form->handleRequest($request);
+        $form->handleRequest($request); //tente d'analyser la requete ? => et bind l'ensemble des données vis a vis l'object article
 
-        if($form->isSubmitted() && $form->isValid()){
-            $article->setCreatedAt(new DateTime());
+        if($form->isSubmitted() && $form->isValid()){ // si la requete est valide ? et envoyable ?
+            if(!$article->getId()){
+                $article->setCreatedAt(new DateTime()); // rajouter  la date
+            }
 
             $manager->persist($article);
             $manager->flush();
@@ -66,8 +75,9 @@ class BlogController extends AbstractController
         }
                 
 
-        return $this->render('blog/create.html.twig', [
-            'articleForm' => $form->createView()
+        return $this->render('blog/article_form.html.twig', [
+            'articleForm' => $form->createView(),
+            'editMode' => $article->getId() == !Null
         ]);
     }
 

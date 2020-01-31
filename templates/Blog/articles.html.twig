@@ -17,7 +17,8 @@
 			<div class="content">
 				<img src="{{article.image}}" alt="">
 				<p>{{article.content | raw }}</p>
-				<a href="{{ path('article_details',{ 'id': article.id }) }}" class="btn btn-primary">...</a>
+				<a href="{{ path('article_details',{ 'id': article.id }) }}" class="btn btn-primary">Lire</a>
+				<a href="{{ path('article_edit',{ 'id': article.id }) }}" class="btn btn-primary">Modifier</a>
 			</div>
 		</article>
 		{% endfor %}
